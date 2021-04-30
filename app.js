@@ -69,17 +69,18 @@ setInterval(() => {
 
     const studyChannel = client.channels.cache.find(ch => ch.name === 'study-room');
     const connection = client.channels.cache.find(ch => ch.name === 'study-vc').join();
-    const dispatcher;
     if ((min == 5 || min == 35) && t.getSeconds() == 0 && !playedBefore) {
       studyChannel.send("break time over! work for 25 minutes now");
-      dispatcher = connection.play('https://reeceyang.github.io/sakura-timer/mixkit-phone-ring-bell-593.wav');
+      const dispatcher = connection.play('https://reeceyang.github.io/sakura-timer/mixkit-phone-ring-bell-593.wav');
       playedBefore = true;
+      dispatcher.destroy();
     } else if ((min == 0 || min == 30) && t.getSeconds() == 0 && !playedBefore) {
       studyChannel.send("work time over! break for 5 minutes now");
-      dispatcher = connection.play('https://reeceyang.github.io/sakura-timer/mixkit-achievement-bell-600.wav');
+      const dispatcher = connection.play('https://reeceyang.github.io/sakura-timer/mixkit-achievement-bell-600.wav');
       playedBefore = true;
+      dispatcher.destroy();
     } else if (playedBefore) {
       playedBefore = false;
     }
-    dispatcher.destroy();
+
   }, 500);
