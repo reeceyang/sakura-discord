@@ -12,13 +12,22 @@ client.login(process.env.BOT_TOKEN);
 var info = "";
 var joinedVoiceChannel = false;
 var voiceChannel;
+var sendMessages = false;
+const helpMessage = `sakura-timer
+s - current time
+s join - sakura-timer will play sounds in the voice channel you are in
+s on - turn on work and break messages
+s off - turn off work and break messages
+source: https://github.com/reeceyang/sakura-discord
+`;
+
 
 client.on('message', async msg => {
   if (msg.content === 's') {
     msg.channel.send(info);
   }
   if (msg.content === 's help') {
-    msg.channel.send("oops sorry I still have to write this lol");
+    msg.channel.send(helpMessage);
   }
   if (msg.content === 's join') {
     // Only try to join the sender's voice channel if they are in one themselves
@@ -30,6 +39,14 @@ client.on('message', async msg => {
     } else {
       msg.reply('you need to join a voice channel first!');
     }
+  }
+  if (msg.content === 's on') {
+    msg.channel.send("turned sounds and messages on");
+    sendMessages = true;
+  }
+  if (msg.content === 's off') {
+    msg.channel.send("turned sounds and messages off");
+    sendMessages = false;
   }
   if (msg.content === 's test sound') {
     if (joinedVoiceChannel) {
@@ -88,14 +105,14 @@ setInterval(async () => {
     const studyChannel = client.channels.cache.find(ch => ch.name === 'study-room');
     // const connection = client.channels.cache.find(ch => ch.name === 'study-vc').join();
     if ((min == 5 || min == 35) && t.getSeconds() == 0 && !playedBefore) {
-      studyChannel.send("break time over! work for 25 minutes now");
+      if (!sendMessages) studyChannel.send("break time over! work for 25 minutes now");
       if (joinedVoiceChannel) {
         const connection = await voiceChannel.join();
         connection.play('https://reeceyang.github.io/sakura-timer/mixkit-phone-ring-bell-593.wav');
       }
       playedBefore = true;
     } else if ((min == 0 || min == 30) && t.getSeconds() == 0 && !playedBefore) {
-      studyChannel.send("work time over! break for 5 minutes now");
+      if (!sendMessages) studyChannel.send("work time over! break for 5 minutes now");
       if (joinedVoiceChannel) {
         const connection = await voiceChannel.join();
         connection.play('https://reeceyang.github.io/sakura-timer/mixkit-achievement-bell-600.wav');
